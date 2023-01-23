@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/medenzel/grpc-fileserver";
+
+message DownloadRequest {
+    string filename = 1;
+}
+
+message DownloadResponse {
+    bytes filechank = 1;
+}
+
+message UploadRequest {
+    oneof data {
+        string filename = 1;
+        bytes filechank = 2;
+    };
+}
+
+message UploadResponse {
+    int32 size = 1;
+}
+
+message ListRequest {
+}
+
+message ListResponse {
+    string filename = 1;
+    int64 size = 2;
+    google.protobuf.Timestamp modTime = 3;
+}
+
+service FileService {
+    rpc Download (DownloadRequest) returns (stream DownloadResponse); 
+    rpc Upload (stream UploadRequest) returns (UploadResponse);
+    rpc ListFiles (ListRequest) returns (stream ListResponse);
+}
